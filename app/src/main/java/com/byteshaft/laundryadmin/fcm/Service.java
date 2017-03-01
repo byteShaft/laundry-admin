@@ -4,10 +4,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.byteshaft.laundryadmin.MainActivity;
 import com.byteshaft.laundryadmin.R;
@@ -23,22 +24,23 @@ public class Service extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Log.e("TAG", "Title" + remoteMessage.getNotification().getTitle());
-        Log.e("TAG",  "Body" + remoteMessage.getNotification().getBody());
-        sendNotification(remoteMessage.getNotification().getBody());
+        sendNotification();
     }
 
-    private void sendNotification(String messageBody) {
+    private void sendNotification() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_notification);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(bm)
+                .setTicker("Laundry Request")
                 .setContentTitle("Laundry Request")
-                .setContentText(messageBody)
+                .setContentText("New laundry request received")
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
